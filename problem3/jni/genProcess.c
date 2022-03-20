@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-#define STUID 520021910863
+#define STUID "520021910863"
 
 int main() {
   pid_t pid = fork();
@@ -11,9 +11,9 @@ int main() {
     return -1;
 
   if (pid > 0) {
-    printf("%d Parent: PID = %d\n", STUID, pid);
+    printf(STUID " Parent: PID = %d\n", pid);
   } else {
-    printf("%d Child: PID = %d\n", STUID, getpid());
+    printf(STUID " Child: PID = %d\n", getpid());
     execl("/data/misc/ptreeTestARM", "ptreeTestARM", NULL);
   }
 
