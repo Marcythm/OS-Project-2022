@@ -3,6 +3,11 @@
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/unistd.h>
+#include <linux/list.h>
+#include <linux/gfp.h>
+#include <linux/slab.h>
+#include <linux/uaccess.h>
+#include <linux/string.h>
 MODULE_LICENSE("DUAL BSD/GPL");
 
 /* ------------------------------ */
