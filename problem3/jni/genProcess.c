@@ -7,14 +7,15 @@
 
 int main() {
   pid_t pid = fork();
+
   if (pid < 0)
     return -1;
-
-  if (pid > 0) {
-    printf(STUID " Parent: PID = %d\n", pid);
-  } else {
+  else if (pid == 0) {
     printf(STUID " Child: PID = %d\n", getpid());
     execl("/data/misc/ptreeTestARM", "ptreeTestARM", NULL);
+  } else {
+    printf(STUID " Parent: PID = %d\n", getpid());
+    wait(NULL);
   }
 
   return 0;
