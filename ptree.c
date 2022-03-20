@@ -22,7 +22,7 @@ struct prinfo{
 
 static int (*oldcall)(void);
 
-static void dfs(struct task_struct *task, struct prinfo *buf, int *nr) {
+static void dfs(struct task_struct *task, struct prinfo *buf, int *nr, bool isLast) {
   int cur = *nr;
   struct prinfo *pf = buf + cur;
   struct task_struct *child;
@@ -36,17 +36,17 @@ static void dfs(struct task_struct *task, struct prinfo *buf, int *nr) {
   strcpy(pf->comm, task->comm);
   pf->parent_pid = (task->parent) ? task->parent->pid : 0;
   pf->first_child_pid = 0;
-  pf->next_sibling_pid = 0;
+  pf->next_sibling_pid = isLast ? 0 : list_entry(task->sibling.next, struct task_struct, sibling)->pid;
+
+  list_for_each(list, &task->children)
+    childcnt++;
 
   list_for_each(list, &task->children) {
     child = list_entry(list, struct task_struct, sibling);
-    childcnt++;
+    childcnt--;
     pf->first_child_pid = child->pid;
-    dfs(child, buf, nr);
+    dfs(child, buf, nr, childcnt == 0);
   }
-
-  if (childcnt > 1)
-    pf->next_sibling_pid = list_entry(task->sibling.next, struct task_struct, sibling)->pid;
 }
 
 static int ptree(struct prinfo *buf, int *nr) {
@@ -58,7 +58,7 @@ static int ptree(struct prinfo *buf, int *nr) {
 
   *knr = 0;
   read_lock(&tasklist_lock);
-  dfs(&init_task, kbuf, knr);
+  dfs(&init_task, kbuf, knr, true);
   read_unlock(&tasklist_lock);
 
   if (copy_to_user(buf, kbuf, BUFFERSIZE * sizeof(struct prinfo)))
