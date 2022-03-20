@@ -1,7 +1,7 @@
 # Android Module Makefile for ptree.c
 obj-m := ptree.o
 
-KDIR := ~/workspace/kernel/goldfish
+KDIR := ~/Downloads/kernel/goldfish
 CROSS_COMPILE=arm-linux-androideabi-
 CC=$(CROSS_COMPILE)gcc
 LD=$(CROSS_COMPILE)ld
