@@ -21,3 +21,9 @@ cd problem3/jni
 ndk-build && adb push ../libs/armeabi/genProcessARM /data/misc/genProcessARM
 rm -rf ../libs ../obj
 cd ../..
+
+# build server & client and push onto adb (problem 4)
+cd problem4/jni
+ndk-build && adb push ../libs/armeabi/server /data/misc/server && adb push ../libs/armeabi/client /data/misc/client
+rm -rf ../libs ../obj
+cd ../..
