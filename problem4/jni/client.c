@@ -42,15 +42,17 @@ int main(int argc, char *argv[]) {
   while (1) {
     memset(buffer, 0, 256 * sizeof(char));
     fgets(buffer, 256, stdin);
+    // eliminate the newline character read by `fgets`
     buffer[strlen(buffer) - 1] = '\0';
-    // printf("message now: %s\n", buffer);
 
+    // send the message to server
     n = write(sockfd, buffer, strlen(buffer));
     if (n < 0) {
       printf("ERROR writing to socket\n");
       exit(1);
     }
 
+    // if the command is to quit, exit immediately
     if (strcmp(buffer, ":q") == 0) {
       printf("Client closing...\n");
       exit(0);
@@ -63,7 +65,10 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     if (buffer[0] == 0 && buffer[1] == '1') {
+      // if the message received is the magic code
+      // print the wait information
       printf("From server: Please wait...\n");
+      // then wait server to handle the request
       goto re_exec;
     }
 

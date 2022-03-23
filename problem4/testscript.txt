@@ -1,0 +1,36 @@
+./server
+Server initiating...
+Receiving message: Today is a good day
+Receiving message: What's this
+Receiving message: :q
+Server thread closing...
+Receiving message: How are you?
+Receiving message: :q
+Server thread closing...
+Receiving message: :q
+Server thread closing...
+
+# client 1
+./client
+Please enter the message:
+Today is a good day
+From server: Wrgdb lv d jrrg gdb
+:q
+Client closing...
+
+# client 2
+./client
+Please enter the message:
+What's this
+From server: Zkdw'v wklv
+:q
+Client closing...
+
+# client 3
+./client
+Please enter the message:
+How are you?
+From server: Please wait...
+From server: Krz duh brx?
+:q
+Client closing...

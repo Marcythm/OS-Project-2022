@@ -1,3 +1,4 @@
+./genProcessARM
 520021910863 Parent: PID = 576
 520021910863 Child: PID = 578
 57 processes totally

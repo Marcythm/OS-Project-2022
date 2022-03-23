@@ -29,11 +29,13 @@ int main() {
   printf("%d processes totally\n", *nr);
   int indent = 0, i = 0, j = 0;
   for (i = 0; i < *nr; i++) {
+    // do indentation
     if (i != 0 && buf[i-1].pid == buf[i].parent_pid)
       indent++;
     else if (buf[i-1].parent_pid != buf[i].parent_pid)
       indent--;
 
+    // indent: 2 spaces
     for (j = 0; j < indent; j++)
       printf("  ");
 

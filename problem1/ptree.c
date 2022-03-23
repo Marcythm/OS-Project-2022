@@ -27,6 +27,10 @@ struct prinfo{
 
 static int (*oldcall)(void);
 
+// get information of all processes starting from `task`
+// and store them into `buf`, starting from index `*nr`.
+// isLast: whether current process is the last child of its parent
+//         is used to help determine the value of `next_sibling_pid`.
 static void dfs(struct task_struct *task, struct prinfo *buf, int *nr, bool isLast) {
   int cur = *nr;
   struct prinfo *pf = buf + cur;
@@ -39,17 +43,19 @@ static void dfs(struct task_struct *task, struct prinfo *buf, int *nr, bool isLa
   pf->pid = task->pid;
   pf->uid = task->cred->uid;
   strcpy(pf->comm, task->comm);
-  pf->parent_pid = (task->parent) ? task->parent->pid : 0;
-  pf->first_child_pid = 0;
+  pf->parent_pid = (task->parent) ? task->parent->pid : 0; // if no parent, set 0
   pf->next_sibling_pid = isLast ? 0 : list_entry(task->sibling.next, struct task_struct, sibling)->pid;
+  // if `task` is the last child of its parent,
 
+  // calculate the number of children
   list_for_each(list, &task->children)
     childcnt++;
+
+  pf->first_child_pid = (childcnt > 0) ? list_entry((&task->children)->next, struct task_struct, sibling)->pid : 0;
 
   list_for_each(list, &task->children) {
     child = list_entry(list, struct task_struct, sibling);
     childcnt--;
-    pf->first_child_pid = child->pid;
     dfs(child, buf, nr, childcnt == 0);
   }
 }
@@ -63,9 +69,11 @@ static int ptree(struct prinfo *buf, int *nr) {
 
   *knr = 0;
   read_lock(&tasklist_lock);
+  // get information and store them into `kbuf`
   dfs(&init_task, kbuf, knr, true);
   read_unlock(&tasklist_lock);
 
+  // copy the data from kernel buffer to user-provided buffer
   if (copy_to_user(buf, kbuf, BUFFERSIZE * sizeof(struct prinfo)))
     return -1;
   if (copy_to_user(nr, knr, sizeof(int)))

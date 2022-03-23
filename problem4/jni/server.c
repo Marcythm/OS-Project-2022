@@ -16,7 +16,8 @@ int threadcounter = 0;
 int main(int argc, char *argv[]) {
   /////////////////////////////////////////////////////////////////
   // DO NOT change this part if you are not familiar with Linux Network Programming
-  int sockfd, newsockfd, portno, clilen, n;
+  int sockfd, newsockfd, portno, n;
+  socklen_t clilen;
   char buffer[256];
   struct sockaddr_in serv_addr, cli_addr;
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -43,12 +44,14 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     pthread_t thread;
+    // wait for a new connection and accept it, create a new sockfd
     newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
     if (newsockfd < 0) {
       printf("ERROR on accept\n");
       exit(1);
     }
 
+    // create a new thread to serve the new connection
     pthread_create(&thread, NULL, serve, &newsockfd);
   }
 
@@ -72,13 +75,13 @@ void *serve(void *sockfd) {
   char buffer[256];
 
   pthread_mutex_lock(&mutexcnt);
-  if (threadcounter == 2) {
+  if (threadcounter == 2) { // already 2 threads, waiting
     pthread_mutex_unlock(&mutexcnt);
-    write(newsockfd, "\0""1", 3); // inform the client to wait
-    pthread_mutex_lock(&mutex); // wait for the control
+    write(newsockfd, "\0""1", 3); // inform the client to wait using magic code
+    pthread_mutex_lock(&mutex); // already 2 threads, (wait and) lock the control
     pthread_mutex_lock(&mutexcnt);
-  } else if (threadcounter == 1)
-    pthread_mutex_lock(&mutex);
+  } else if (threadcounter == 1) // only 1 thread, execute immediately
+    pthread_mutex_lock(&mutex); // already 2 threads, lock the control
   threadcounter++;
   pthread_mutex_unlock(&mutexcnt);
 
@@ -92,18 +95,21 @@ void *serve(void *sockfd) {
 
     printf("Receiving message: %s\n", buffer);
 
+    // if the command is to quit, terminate this thread
     if (strcmp(buffer, ":q") == 0) {
       printf("Server thread closing...\n");
       pthread_mutex_lock(&mutexcnt);
       threadcounter--;
       if (threadcounter == 1)
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutex); // only 1 thread left, release the control
       pthread_mutex_unlock(&mutexcnt);
       pthread_exit(0);
     }
 
+    // do encryption
     for (i = 0; i < n; i++)
       buffer[i] = encrypt_c(buffer[i]);
+    // return the result to client
     n = write(newsockfd, buffer, n);
     if (n < 0) {
       printf("ERROR writing to socket\n");

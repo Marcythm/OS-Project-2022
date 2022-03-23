@@ -12,6 +12,7 @@ int main() {
     return -1;
   else if (pid == 0) {
     printf(STUID " Child: PID = %d\n", getpid());
+    // execute ptree syscall in child process
     execl("/data/misc/ptreeTestARM", "ptreeTestARM", NULL);
   } else {
     printf(STUID " Parent: PID = %d\n", getpid());
