@@ -43,14 +43,15 @@ static void dfs(struct task_struct *task, struct prinfo *buf, int *nr, bool isLa
   pf->pid = task->pid;
   pf->uid = task->cred->uid;
   strcpy(pf->comm, task->comm);
-  pf->parent_pid = (task->parent) ? task->parent->pid : 0; // if no parent, set 0
+  pf->parent_pid = (task->parent) ? task->parent->pid : 0; // if no parent, set to 0
   pf->next_sibling_pid = isLast ? 0 : list_entry(task->sibling.next, struct task_struct, sibling)->pid;
-  // if `task` is the last child of its parent,
+  // if `task` is the last child of its parent, set `next_sibling_pid` to 0
 
   // calculate the number of children
   list_for_each(list, &task->children)
     childcnt++;
 
+  // if no child, set to 0
   pf->first_child_pid = (childcnt > 0) ? list_entry((&task->children)->next, struct task_struct, sibling)->pid : 0;
 
   list_for_each(list, &task->children) {
