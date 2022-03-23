@@ -16,6 +16,8 @@ struct prinfo{
   char comm[64]; /* name of program executed */
 };
 
+int stack[100];
+
 int main() {
   int *nr = malloc(sizeof(int));
   struct prinfo *buf = malloc(BUFFERSIZE * sizeof(struct prinfo));
@@ -27,16 +29,14 @@ int main() {
     return -1;
 
   printf("%d processes totally\n", *nr);
-  int indent = 0, i = 0, j = 0;
+  int i = 0, j = 0, depth = -1;
   for (i = 0; i < *nr; i++) {
-    // do indentation
-    if (i != 0 && buf[i-1].pid == buf[i].parent_pid)
-      indent++;
-    else if (buf[i-1].parent_pid != buf[i].parent_pid)
-      indent--;
+    while (depth >= 0 && stack[depth] != buf[i].parent_pid)
+      depth--;
+    stack[++depth] = buf[i].pid;
 
     // indent: 2 spaces
-    for (j = 0; j < indent; j++)
+    for (j = 0; j <= depth; j++)
       printf("  ");
 
     printf("%s,%d,%ld,%d,%d,%d,%ld\n",
