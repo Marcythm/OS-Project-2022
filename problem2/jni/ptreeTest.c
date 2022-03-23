@@ -36,7 +36,7 @@ int main() {
     stack[++depth] = buf[i].pid;
 
     // indent: 2 spaces
-    for (j = 0; j <= depth; j++)
+    for (j = 0; j < depth; j++)
       printf("  ");
 
     printf("%s,%d,%ld,%d,%d,%d,%ld\n",
