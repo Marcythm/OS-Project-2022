@@ -1,3 +1,7 @@
+// the source file of generating a child process
+// and call ptree syscall in child process
+// to show the relationship between it and its parent
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

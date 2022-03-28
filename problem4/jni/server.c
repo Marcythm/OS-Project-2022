@@ -1,3 +1,7 @@
+// source file implementing a encryption server
+// handling request from clients and send encrypted
+// messages back
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

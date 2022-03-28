@@ -1,3 +1,6 @@
+// the source file implementing a encryption client
+// sending request to the encryption server
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

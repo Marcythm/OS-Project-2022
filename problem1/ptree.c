@@ -1,3 +1,6 @@
+// the source file of ptree module
+// containing the implementation of ptree syscall.
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
